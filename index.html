@@ -24,36 +24,35 @@
         </main>
 
     <script>
-        // ---1Bdf9Ue4T4zXxghZMahmlqD1HcHEgChLZhpNljO2qDoU---
-        const SHEET_ID = '1Bdf9Ue4T4zXxghZMahmlqD1HcHEgChLZhpN1jO2qDoU';
-      const URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+       const SHEET_ID = '1Bdf9Ue4T4zXxghZMahmlqD1HcHEgChLZhpN1jO2qDoU';
+const URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
 
-        async function cargarDatos() {
-            try {
-                const res = await fetch(URL);
-                const texto = await res.text();
-                const json = JSON.parse(texto.substr(47).slice(0, -2));
-                const muro = document.getElementById('muro');
+fetch(URL)
+    .then(res => res.text())
+    .then(data => {
+        const json = JSON.parse(data.substring(47).slice(0, -2));
+        const rows = json.table.rows;
+        const container = document.getElementById('cards-container');
+        container.innerHTML = ''; // Limpia la carga
 
-                json.table.rows.forEach(fila => {
-                    const card = document.createElement('div');
-                    card.className = 'card';
-                    // fila.c[0] es Titulo, fila.c[1] es Imagen, fila.c[2] es Descripcion
-                    card.innerHTML = `
-                        <img src="${fila.c[1] ? fila.c[1].v : ''}" onerror="this.src='https://via.placeholder.com/400x200?text=Error+en+Link'">
-                        <div class="card-body">
-                            <h3>${fila.c[0] ? fila.c[0].v : 'Sin título'}</h3>
-                            <p>${fila.c[2] ? fila.c[2].v : ''}</p>
-                        </div>
-                    `;
-                    muro.appendChild(card);
-                });
-            } catch (e) {
-                console.log("Error:", e);
-            }
-        }
+        rows.forEach((row, index) => {
+            if (index === 0) return; // Salta los títulos
+            
+            const titulo = row.c[0] ? row.c[0].v : "Sin nombre";
+            const imagen = row.c[1] ? row.c[1].v : "";
+            const desc = row.c[2] ? row.c[2].v : "";
 
-        cargarDatos();
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <img src="${imagen}" alt="${titulo}" style="width:100%; border-radius:10px;">
+                <h3>${titulo}</h3>
+                <p>${desc}</p>
+            `;
+            container.appendChild(card);
+        });
+    })
+    .catch(err => console.error("Error:", err));
     </script>
 </body>
 </html>
