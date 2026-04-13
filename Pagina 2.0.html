@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chipilines Sv 2.0 - Naturaleza Viva</title>
+    <style>
+        :root {
+            --Fondo: #e0f7fa;
+            --Principal: #2e7d32;
+            --Acento-Flor: #ff4081;
+            --Texto-Oscuro: #1b5e20;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Segoe UI', cursive, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #a5d6a7 0%, #e0f7fa 100%);
+            color: var(--Texto-Oscuro);
+            min-height: 100vh;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 50px;
+            border: 3px solid var(--Principal);
+        }
+
+        #adminPanel {
+            display: none; 
+            background: white;
+            padding: 20px;
+            border-radius: 25px;
+            max-width: 500px;
+            margin: 0 auto 40px;
+            border: 2px solid var(--Acento-Flor);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .card img { width: 100%; height: 200px; object-fit: cover; }
+        .card-body { padding: 20px; }
+        .card-body h3 { color: var(--Principal); margin-top: 0; }
+
+        input, textarea {
+            width: 100%; padding: 12px; margin: 10px 0;
+            border-radius: 12px; border: 2px solid #a5d6a7;
+            box-sizing: border-box;
+        }
+
+        button.btn-publicar {
+            background: var(--Principal); color: white; border: none;
+            padding: 15px; border-radius: 30px; cursor: pointer;
+            width: 100%; font-weight: bold;
+        }
+
+        /* BOTÓN AL 50% DE VISIBILIDAD */
+        #secretBtn {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            width: 40px;
+            height: 40px;
+            background: var(--Principal);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            opacity: 0.5; /* Aquí está el 50% */
+            transition: opacity 0.3s;
+            z-index: 9999;
+            font-size: 10px;
+        }
+
+        #secretBtn:hover {
+            opacity: 1; /* Se ve claro al pasar el mouse */
+        }
+
+        .btn-borrar {
+            position: absolute; top: 10px; right: 10px;
+            background: red; color: white; border: none;
+            border-radius: 50%; width: 30px; height: 30px;
+            cursor: pointer; display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🌿 Chipilines Sv 2.0 🦜</h1>
+        <p>Mural de Informacion del canal, aqui encontraras la informacion que se menciona en el canal</p>
+    </header>
+
+    <div id="adminPanel">
+        <h3 style="color:var(--Acento-Flor); text-align:center;">Panel Maestro 🔑</h3>
+        <input type="text" id="titulo" placeholder="Nombre de la especie...">
+        <input type="text" id="imgUrl" placeholder="Link de la imagen...">
+        <textarea id="desc" rows="4" placeholder="Descripción detallada..."></textarea>
+        <button class="btn-publicar" onclick="publicar()">Publicar 🚀</button>
+    </div>
+
+    <main class="grid-container" id="muro"></main>
+
+    <button id="secretBtn" onclick="intentarEntrar()">Admin</button>
+
+    <script>
+        let esAdmin = false;
+        const claveCorrecta = "chipilin123";
+
+        function intentarEntrar() {
+            let pass = prompt("Clave de acceso:");
+            if (pass === claveCorrecta) {
+                esAdmin = true;
+                document.getElementById('adminPanel').style.display = 'block';
+                actualizarVistaAdmin();
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key.toLowerCase() === 's') { intentarEntrar(); }
+        });
+
+        function publicar() {
+            const t = document.getElementById('titulo').value;
+            const i = document.getElementById('imgUrl').value;
+            const d = document.getElementById('desc').value;
+            if(!t || !d) return alert("Faltan datos");
+
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <button class="btn-borrar" onclick="this.parentElement.remove()" style="display:${esAdmin ? 'block':'none'}">X</button>
+                <img src="${i}" onerror="this.src='https://via.placeholder.com/400x200?text=Imagen+No+Cargada'">
+                <div class="card-body">
+                    <h3>${t}</h3>
+                    <p>${d}</p>
+                </div>
+            `;
+            document.getElementById('muro').prepend(card);
+            
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('titulo').value = '';
+            document.getElementById('imgUrl').value = '';
+            document.getElementById('desc').value = '';
+        }
+
+        function actualizarVistaAdmin() {
+            const btns = document.querySelectorAll('.btn-borrar');
+            btns.forEach(b => b.style.display = 'block');
+        }
+    </script>
+</body>
+</html>
